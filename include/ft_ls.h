@@ -1,0 +1,43 @@
+#ifndef FT_LS_H
+#define FT_LS_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
+#include "linkedlist.h"
+
+#define OPT_RECURSIVE 1
+#define OPT_REVERSE 2
+#define OPT_ALL_INFO 4
+#define OPT_LISTING 8
+#define OPT_G_LISTING 32
+#define OPT_O_LISTING 64
+#define OPT_TIME_ORDERED 16
+#define OPT_DIRECTORIES_ONLY 128
+#define OPT_IDENTS "Rralgotd"
+#define OPT_RECURSIVE_IDENT 'R'
+#define OPT_REVERSE_IDENT 'r'
+#define OPT_ALL_INFO_IDENT 'a'
+#define OPT_LISTING_IDENT 'l'
+#define OPT_G_LISTING_IDENT 'g'
+#define OPT_O_LISTING_IDENT 'o'
+#define OPT_TIME_ORDERED_IDENT 't'
+#define OPT_DIRECTORIES_ONLY_IDENT 'd'
+
+typedef uint8_t t_opt;
+
+typedef struct t_arguments {
+	t_opt options;
+	t_llist *dirs;
+} t_arguments;
+
+typedef struct t_fsinfo {
+} t_fsinfo;
+
+t_arguments parse_arguments(int argc, char *const *argv);
+int8_t list(t_arguments args);
+
+#endif
