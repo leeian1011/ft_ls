@@ -28,6 +28,7 @@ void recurse_list(t_llist **directories, int options, char *dirp) {
 	struct dirent *dir_entry;
 	while ((dir_entry = readdir(dir)) != NULL) {
 		if (!(!strcmp(dir_entry->d_name, ".") || !strcmp(dir_entry->d_name, "..")) && dir_entry->d_type == DT_DIR && (options & OPT_RECURSIVE)) {
+			if (!strncmp(dir_entry->d_name, ".", 1) && !(options & OPT_ALL_INFO)) continue;
 			strlcat(dirp, "/", 1024);
 			strlcat(dirp, dir_entry->d_name, 1024); 
 			printf("new => %s\n", dirp);
@@ -35,6 +36,7 @@ void recurse_list(t_llist **directories, int options, char *dirp) {
 			memset((dirp + orig_dirp_len), 0, 1024); 
 			printf("post memset => %s\n", dirp);
 		}
+		if (!strncmp(dir_entry->d_name, ".", 1) && !(options & OPT_ALL_INFO)) continue;
 		llist_append(&directory_list, dir_entry);
 	}
 	llist_append(directories, directory_list);
