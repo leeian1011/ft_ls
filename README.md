@@ -1,4 +1,4 @@
-# ft_ls
+# ft\_ls
 
 A recreation of the POSIX-compliant requirement and GNU coreutils command, `ls`.
 
@@ -37,6 +37,7 @@ rwxrwxrwx  file2 # this file does not
 
 ### Log
 > This section is a devlog that will not be formatted properly, it's purpose is to note/jot down my progress.
+
 [16/8/2026]
 - Converted manual arg parsing approach (strchr + checking arg[0] == '-') to using getopt (provided by libc).
 - manual arg parsing had issues handling '--' and plain '-'
@@ -45,3 +46,8 @@ rwxrwxrwx  file2 # this file does not
 - default ls listing (lexicographically ordered).
 - Added reverse linked list function to accomodate '-r' option.
 - introduce github repo for tracking.
+ [17/8/2026]
+ - theres no valgrind on mac lmao
+ - rediscovered strlcat and memset to not have to allocate string when recursively checking directories.
+ - created an abomination `t_llist *directories` where `directories->data` is a `t_llist *`.
+ - after recursively appending all directories in -R option mode, program aborts, unable to identify why due to valgrind being missing on macOS.
