@@ -52,13 +52,14 @@ int8_t recurse_list(t_llist **directories, int options, char *dirp) {
 		t_llist *iterator = directory_list;
 		while (iterator) {
 			struct dirent *entry = iterator->data;
+			iterator = iterator->next;
+			if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
 			if (entry->d_type == DT_DIR) {
 				strlcat(dirp, "/", 1024);
 				strlcat(dirp, entry->d_name, 1024); 
 				recurse_list(directories, options, dirp);
 				memset((dirp + dirp_len), 0, 1024); 
 			}
-			iterator = iterator->next;
 		}
 	}
 
