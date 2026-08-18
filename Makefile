@@ -1,11 +1,12 @@
 TARGET = ft_ls
-CFLAGS = -Wall -Werror -Wextra
-DEBUGFLAGS = -g
+CFLAGS = -Wall -Werror -Wextra 
+DEBUGFLAGS = -g 
 SRC_DIR = src
 OBJ_DIR = obj
 DEBUG_OBJ_DIR = debug_obj
 SRCS = src/main.c src/linked_list/llist_append.c src/linked_list/llist_free.c src/parser/parse_arg.c\
-	   src/list.c src/linked_list/llist_len.c src/linked_list/llist_sort.c src/linked_list/llist_rev.c
+	   src/list.c src/linked_list/llist_len.c src/linked_list/llist_sort.c src/linked_list/llist_rev.c\
+	   src/error.c
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 DEBUG_OBJS = $(patsubst $(SRC_DIR)/%.c, $(DEBUG_OBJ_DIR)/%.o, $(SRCS))
 

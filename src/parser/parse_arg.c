@@ -1,6 +1,8 @@
 #include "../../include/ft_ls.h"
-#include <bits/getopt_core.h>
+#include <errno.h>
+#include <dirent.h>
 #include <getopt.h>
+#include <linux/limits.h>
 
 static struct option long_opts[] = {
 	{"help", no_argument, NULL, 255},
@@ -34,7 +36,8 @@ uint8_t ident_to_optbit(char ident) {
 t_arguments parse_arguments(int argc, char *const *argv) {
 	t_arguments args = {
 		0,
-		NULL
+		NULL,
+		true
 	};
 	
 	if (argc == 1) return args;
@@ -55,9 +58,49 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		args.options |= ident_to_optbit(opts);
 	}
 
+	char cwd[PATH_MAX];
+	getcwd(cwd, PATH_MAX);
+	size_t cwd_len = strlen(cwd);
+	t_llist *non_dir = NULL;
+
 	for (int i = optind; i < argc; i++) {
-		llist_append(&args.dirs, argv[i]);
+		if (args.options & OPT_PASSED_PATH) {
+			args.options |= OPT_MULTI_PP;
+		}
+
+		strlcat(cwd, "/", PATH_MAX);
+		strlcat(cwd, argv[i], PATH_MAX);
+		DIR* dir = opendir(cwd);
+		if (!dir) {
+			handle_errno_parsing(argv[i], &non_dir);
+		} else {
+			llist_append(&args.dirs, argv[i]);
+		}
+		if (dir == NULL) {
+			if (errno == ENOTDIR) {
+				llist_append(&non_dir, argv[i]);
+			} else if (errno == ENOENT) {
+				fprintf(stderr, "ls: %s does not exist brah\n", argv[i]);
+			}
+		} else {
+			llist_append(&args.dirs, argv[i]);
+			args.options |= OPT_PASSED_PATH;
+		}
+		closedir(dir);
+		memset(cwd + cwd_len, 0, PATH_MAX - cwd_len);
 	}
+	t_llist *itr = non_dir;
+	while (itr) {
+		printf("%s ", (char *)itr->data);
+		itr = itr->next;
+	}
+	if (non_dir) {
+		printf("\n");
+		if (args.dirs == NULL) {
+			args.execute_list = false;
+		}
+	}
+	llist_free(non_dir);
 
 	return args;
 }

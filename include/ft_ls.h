@@ -17,6 +17,8 @@
 #define OPT_O_LISTING 64
 #define OPT_TIME_ORDERED 16
 #define OPT_DIRECTORIES_ONLY 128
+#define OPT_PASSED_PATH 256
+#define OPT_MULTI_PP 512
 #define OPT_IDENTS "Rralgotd"
 #define OPT_RECURSIVE_IDENT 'R'
 #define OPT_REVERSE_IDENT 'r'
@@ -27,17 +29,19 @@
 #define OPT_TIME_ORDERED_IDENT 't'
 #define OPT_DIRECTORIES_ONLY_IDENT 'd'
 
-typedef uint8_t t_opt;
+typedef uint16_t t_opt;
 
 typedef struct t_arguments {
 	t_opt options;
 	t_llist *dirs;
+	bool execute_list;
 } t_arguments;
 
 typedef struct t_fsinfo {
 } t_fsinfo;
 
 t_arguments parse_arguments(int argc, char *const *argv);
-int8_t list(t_arguments args);
+void temp_list_all(t_arguments args);
+void handle_errno_parsing(char *dir, t_llist **non_dir);
 
 #endif
