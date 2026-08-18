@@ -11,7 +11,7 @@ int main(int argc, char *const *argv) {
 	}*/
 
 	list(args);
-	printf("frfr done\n");
 	llist_free(args.dirs);
+	printf("frfr done\n");
 	return 0;
 }

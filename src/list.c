@@ -20,26 +20,49 @@ void free_dirent(void *data) {
 	}
 }
 
-void recurse_list(t_llist **directories, int options, char *dirp) {
-	t_llist *directory_list = NULL;
-	DIR *dir = opendir(dirp);
-	size_t orig_dirp_len = strlen(dirp);
+// char *get_errno() {
+// 	// handle errno
+// }
 
-	struct dirent *dir_entry;
-	while ((dir_entry = readdir(dir)) != NULL) {
-		if (!(!strcmp(dir_entry->d_name, ".") || !strcmp(dir_entry->d_name, "..")) && dir_entry->d_type == DT_DIR && (options & OPT_RECURSIVE)) {
-			if (!strncmp(dir_entry->d_name, ".", 1) && !(options & OPT_ALL_INFO)) continue;
-			strlcat(dirp, "/", 1024);
-			strlcat(dirp, dir_entry->d_name, 1024); 
-			printf("new => %s\n", dirp);
-			recurse_list(directories, options, dirp);
-			memset((dirp + orig_dirp_len), 0, 1024); 
-			printf("post memset => %s\n", dirp);
-		}
-		if (!strncmp(dir_entry->d_name, ".", 1) && !(options & OPT_ALL_INFO)) continue;
-		llist_append(&directory_list, dir_entry);
+int8_t recurse_list(t_llist **directories, int options, char *dirp) {
+	DIR *dir = opendir(dirp);
+	if (dir == NULL) {
+		// char *error = get_errno();
+		printf("ls: cannot access \"%s\"\n", dirp);
+		return -1;
 	}
+	struct dirent *dir_entry;
+	t_llist *directory_list = NULL;
+	size_t dirp_len = strlen(dirp);
+
+	while ((dir_entry = readdir(dir)) != NULL) {
+		struct dirent *dirent_copy = malloc(sizeof(struct dirent));
+		memcpy(dirent_copy, dir_entry, sizeof(struct dirent));
+		if (!strncmp(dir_entry->d_name, ".", 1) && !(options & OPT_ALL_INFO)) continue;
+		llist_append(&directory_list, dirent_copy);
+	}
+
+	closedir(dir);
+
+	directory_list = llist_sort(directory_list, &compare);
+	if (options & OPT_REVERSE) llist_rev(directory_list);
 	llist_append(directories, directory_list);
+
+	if (options & OPT_RECURSIVE) {
+		t_llist *iterator = directory_list;
+		while (iterator) {
+			struct dirent *entry = iterator->data;
+			if (entry->d_type == DT_DIR) {
+				strlcat(dirp, "/", 1024);
+				strlcat(dirp, entry->d_name, 1024); 
+				recurse_list(directories, options, dirp);
+				memset((dirp + dirp_len), 0, 1024); 
+			}
+			iterator = iterator->next;
+		}
+	}
+
+	return 0;
 }
 
 void print_llist(void *list) {
@@ -51,45 +74,37 @@ void print_llist(void *list) {
 }
 
 int8_t list(t_arguments args) {
-	// t_llist *iterator = args.dirs;
-	// t_llist *dirent_list = NULL;
-	// DIR *dir;
-
 	t_llist *directories = NULL;
-
 	char cwd[PATH_MAX];
 	getcwd(cwd, PATH_MAX);
-	recurse_list(&directories, args.options, cwd);
+
+	if (!llist_len(args.dirs)) {
+		recurse_list(&directories, args.options, cwd);
+		while (directories) {
+			print_llist(directories->data);
+			directories = directories->next;
+		}
+		return 0;
+	}
+
+	if (args.options & OPT_REVERSE) {
+		llist_rev(args.dirs);
+	}
+
+	t_llist *iterator = args.dirs;
+
+	while (iterator) {
+		strlcat(cwd, "/", PATH_MAX);
+		strlcat(cwd, iterator->data, PATH_MAX);
+		recurse_list(&directories, args.options, cwd);
+		iterator = iterator->next;
+	}
 
 	while (directories) {
 		print_llist(directories->data);
 		directories = directories->next;
 	}
+
 	printf("done\n");
 	return 0;
-
-	/*if (!iterator) {
-		char cwd[PATH_MAX];
-		getcwd(cwd, PATH_MAX);
-		dir = opendir(cwd);
-		struct dirent *x;
-		while ((x = readdir(dir)) != NULL) {
-			llist_append(&dirent_list, x);
-		}
-	} else {
-	}
-	dirent_list = llist_sort(dirent_list, &compare);
-	if (args.options & OPT_REVERSE) {
-		dirent_list = llist_rev(dirent_list);
-	}
-	t_llist *tmp = dirent_list;
-	while (dirent_list) {
-		printf("%s  ", ((struct dirent *)dirent_list->data)->d_name);
-		dirent_list = dirent_list->next;
-	}
-	closedir(dir);
-	printf("\n");
-	llist_free(tmp);
-
-	return 0;*/
 }
