@@ -56,8 +56,7 @@ rwxrwxrwx  file2 # this file does not
  [18/8/2026]
 - found out retaining pointers of `struct dirent *` is not safe as mentioned in the ![unix docs](https://www.unix.com/man-page/posix/3p/readdir/)
 mentioned in the description, the pointers may be invalidated by calls to `readdir`, thus I will employ a different approach to managing the data.
-
-
+- found out that files and non-directories are immediately printed out in a list in normal `ls` behaviour
 
 
 
