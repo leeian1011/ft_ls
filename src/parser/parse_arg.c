@@ -75,15 +75,6 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 			handle_errno_parsing(argv[i], &non_dir);
 		} else {
 			llist_append(&args.dirs, argv[i]);
-		}
-		if (dir == NULL) {
-			if (errno == ENOTDIR) {
-				llist_append(&non_dir, argv[i]);
-			} else if (errno == ENOENT) {
-				fprintf(stderr, "ls: %s does not exist brah\n", argv[i]);
-			}
-		} else {
-			llist_append(&args.dirs, argv[i]);
 			args.options |= OPT_PASSED_PATH;
 		}
 		closedir(dir);
@@ -101,6 +92,14 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		}
 	}
 	llist_free(non_dir);
+
+	t_llist *ditr = args.dirs;
+	printf("length of ditr = %li\n", llist_len(ditr));
+
+	while (ditr) {
+		printf("ditr itr: %s\n", (char *)ditr->data);
+		ditr = ditr->next;
+	}
 
 	return args;
 }
