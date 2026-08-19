@@ -1,5 +1,4 @@
 #include "../../include/ft_ls.h"
-#include <errno.h>
 #include <dirent.h>
 #include <getopt.h>
 #include <linux/limits.h>
