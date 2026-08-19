@@ -4,18 +4,6 @@
 #include <linux/limits.h>
 #include <stdbool.h>
 
-typedef struct t_rls_ctx {
-	t_llist **directories;
-	int options;
-	char *dirp;
-	size_t cwd_len;
-} t_rls_ctx;
-
-typedef struct t_rls_dispatch {
-	void (*recurse_list)(t_rls_ctx *context);
-	t_rls_ctx context;
-} t_rls_dispatch;
-
 int compare(t_llist *a, t_llist *b) {
 	struct dirent *a_entry = a->data;
 	struct dirent *b_entry = b->data;
@@ -149,7 +137,8 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 	size_t dirp_len = strlen(ctx->dirp);
 	DIR *dir = opendir(ctx->dirp);
 	if (!dir) {
-		// handle_errno
+		handle_errno_listing(ctx);
+		return;
 	}
 	t_llist *dir_list = NULL;
 	struct dirent *dir_entry;

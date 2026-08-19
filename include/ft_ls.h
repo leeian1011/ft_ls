@@ -40,8 +40,22 @@ typedef struct t_arguments {
 typedef struct t_fsinfo {
 } t_fsinfo;
 
+typedef struct t_rls_ctx {
+	t_llist **directories;
+	int options;
+	char *dirp;
+	size_t cwd_len;
+} t_rls_ctx;
+
+typedef struct t_rls_dispatch {
+	void (*recurse_list)(t_rls_ctx *context);
+	t_rls_ctx context;
+} t_rls_dispatch;
+
 t_arguments parse_arguments(int argc, char *const *argv);
 void temp_list_all(t_arguments args);
 void handle_errno_parsing(char *dir, t_llist **non_dir);
+void handle_errno_listing(t_rls_ctx *ctx);
+
 
 #endif
