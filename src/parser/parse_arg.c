@@ -1,7 +1,7 @@
 #include "../../include/ft_ls.h"
 #include <dirent.h>
 #include <getopt.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 static struct option long_opts[] = {
 	{"help", no_argument, NULL, 255},
@@ -75,17 +75,17 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		} else {
 			llist_append(&args.dirs, argv[i]);
 			args.options |= OPT_PASSED_PATH;
+			closedir(dir);
 		}
-		closedir(dir);
 		memset(cwd + cwd_len, 0, PATH_MAX - cwd_len);
 	}
 	t_llist *itr = non_dir;
 	while (itr) {
-		printf("%s ", (char *)itr->data);
+		// printf("%s ", (char *)itr->data);
 		itr = itr->next;
 	}
 	if (non_dir || (optind < argc)) {
-		printf("\n");
+		// printf("\n");
 		if (args.dirs == NULL) {
 			args.execute_list = false;
 		}
@@ -93,10 +93,10 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 	llist_free(non_dir);
 
 	t_llist *ditr = args.dirs;
-	printf("length of ditr = %li\n", llist_len(ditr));
+	// printf("length of ditr = %li\n", llist_len(ditr));
 
 	while (ditr) {
-		printf("ditr itr: %s\n", (char *)ditr->data);
+		// printf("ditr itr: %s\n", (char *)ditr->data);
 		ditr = ditr->next;
 	}
 
