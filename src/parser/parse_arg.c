@@ -84,7 +84,7 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		printf("%s ", (char *)itr->data);
 		itr = itr->next;
 	}
-	if (non_dir) {
+	if (non_dir || (optind < argc)) {
 		printf("\n");
 		if (args.dirs == NULL) {
 			args.execute_list = false;
