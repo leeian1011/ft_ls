@@ -1,7 +1,6 @@
 #include "../include/ft_ls.h"
 #include <dirent.h>
 #include <limits.h>
-#include <linux/limits.h>
 #include <stdbool.h>
 
 int compare(t_llist *a, t_llist *b) {
@@ -31,7 +30,6 @@ void free_dirent(void *data) {
 void print_llist(void *list) {
 	t_llist *data = list;
 	while (data) {
-		printf("%s\n", (char *)data->data);
 		data = data->next;
 	}
 }
@@ -71,13 +69,9 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 
 
 	// print the list
+	output_dirlist(ctx, dir_list, first_invoc);
 	if (first_invoc) {
 		first_invoc = false;
-	}
-	t_llist *pitr = dir_list;
-	while (pitr) {
-		printf("pitr print: %s\n", ((struct dirent *)pitr->data)->d_name);
-		pitr = pitr->next;
 	}
 	
 	// recurse the function
@@ -128,7 +122,6 @@ void temp_list_all(t_arguments args) {
 
 	t_llist *iterator = llist_sort(args.dirs, &compare);
 	while (iterator) {
-		printf("iterating going -> %s\n", (char *)iterator->data);
 		build_dispatch(&rls_dispatch, iterator->data, rls_ctx.cwd_len);
 		iterator = iterator->next;
 	}

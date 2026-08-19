@@ -56,6 +56,7 @@ t_arguments parse_arguments(int argc, char *const *argv);
 void temp_list_all(t_arguments args);
 void handle_errno_parsing(char *dir, t_llist **non_dir);
 void handle_errno_listing(t_rls_ctx *ctx);
+void output_dirlist(t_rls_ctx *ctx, t_llist *dir_list, bool first_invoc);
 
 
 #endif
