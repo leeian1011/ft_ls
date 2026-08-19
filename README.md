@@ -12,6 +12,15 @@ Options will be handled with bitwise operations for memory-optimization.
 
 ## Understanding & Research
 
+### Necessary libc functions & syscall wrappers.
+
+`getopt` -> clean options handling: i.e -l -a -laR -rR
+`lstat` -> handling -l option, provides all the informations/statistics about the direntry.
+`readdir` | `opendir` -> literally allows us to retrieve files
+`getcwd` -> lets us retrieve current working directory from where `ft_ls` is invoked.
+
+all of these syscall wrappers are provided by C's standard libc.
+
 ### ACL
 
 Access Control List (ACL)
@@ -58,6 +67,11 @@ rwxrwxrwx  file2 # this file does not
 mentioned in the description, the pointers may be invalidated by calls to `readdir`, thus I will employ a different approach to managing the data.
 - found out that files and non-directories are immediately printed out in a list in normal `ls` behaviour
 
+[19/8/2026]
+- Rewrote the recurse list function cleanly
+- Handled free and memory errors
+- researched `lstat` libc syscall wrapper.
+- TODO: rewrite the parsing cleanly
 
 
 
