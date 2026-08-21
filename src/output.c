@@ -42,8 +42,8 @@ void output_dirlist(t_rls_ctx *ctx, t_llist *dir_list, bool first_invoc) {
 	}
 
 	while (dir_list) {
-		struct dirent *entry = (struct dirent *)dir_list->data;
-		printf("%s  ", entry->d_name);
+		struct dirent *entry = ((t_dirdata *)dir_list->data)->dirent;
+		printf("%s ", entry->d_name);
 		dir_list = dir_list->next;
 	}
 }
