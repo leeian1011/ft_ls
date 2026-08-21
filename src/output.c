@@ -36,10 +36,13 @@ void output_dirlist(t_rls_ctx *ctx, t_llist *dir_list, bool first_invoc) {
 		printf("%s:\n", &ctx->dirp[ctx->cwd_len + 1]);
 	}
 
+	size_t list_len = llist_len(dir_list);
 	while (dir_list) {
 		struct dirent *entry = ((t_dirdata *)dir_list->data)->dirent;
 		printf("%s ", entry->d_name);
 		dir_list = dir_list->next;
 	}
-	printf("\n");
+	if (list_len) {
+		printf("\n");
+	}
 }
