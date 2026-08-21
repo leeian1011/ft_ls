@@ -19,7 +19,7 @@ Options will be handled with bitwise operations for memory-optimization.
 `readdir` | `opendir` -> literally allows us to retrieve files
 `getcwd` -> lets us retrieve current working directory from where `ft_ls` is invoked.
 
-all of these syscall wrappers are provided by C's standard libc.
+all of these syscall and syscall wrappers are provided by C's standard libc.
 
 ### ACL
 
@@ -73,7 +73,9 @@ mentioned in the description, the pointers may be invalidated by calls to `readd
 - researched `lstat` libc syscall wrapper.
 - TODO: rewrite the parsing cleanly
 
-
-
-
-
+[21/8/2026]
+- Checked up on the use of `lstat`. The API requires a `struct stat` that contains all of a file/directories statistics.
+- `struct stat` has different values between OpenBSD and Linux OSes, `ls` conventions are also very different.
+- GNU `ls` was developed based on the POSIX description of `ls`, whilst, OpenBSD `ls` was a direct continuation of development from the unix OS.
+- Leveraged macros to reduce redundant ugly code.
+- TODO: handle directories which start with '/'.
