@@ -64,25 +64,43 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 			args.options |= OPT_MULTI_PP;
 		}
 
-		strlcat(cwd, "/", PATH_MAX);
-		strlcat(cwd, argv[i], PATH_MAX);
-		DIR* dir = opendir(cwd);
-		if (!dir) {
-			handle_errno_parsing(argv[i], &non_dir);
-		} else {
-			llist_append(&args.dirs, argv[i]);
-			args.options |= OPT_PASSED_PATH;
-			closedir(dir);
-		}
-		memset(cwd + cwd_len, 0, PATH_MAX - cwd_len);
+		BUILD_RESET(cwd, argv[i], cwd_len, {
+			DIR* dir = opendir(cwd);
+			if (!dir) {
+				handle_errno_parsing(argv[i], &non_dir);
+			} else {
+				llist_append(&args.dirs, argv[i]);
+				args.options |= OPT_PASSED_PATH;
+				closedir(dir);
+			}
+		});
+		// strlcat(cwd, "/", PATH_MAX);
+		// strlcat(cwd, argv[i], PATH_MAX);
+		// DIR* dir = opendir(cwd);
+		// if (!dir) {
+		// 	handle_errno_parsing(argv[i], &non_dir);
+		// } else {
+		// 	llist_append(&args.dirs, argv[i]);
+		// 	args.options |= OPT_PASSED_PATH;
+		// 	closedir(dir);
+		// }
+		// memset(cwd + cwd_len, 0, PATH_MAX - cwd_len);
 	}
+	size_t nondir_len = llist_len(non_dir);
 	t_llist *itr = non_dir;
 	while (itr) {
+		printf("%s ", (char *)itr->data);
 		itr = itr->next;
 	}
+	if (nondir_len) {
+		printf("\n");
+	}
+
 	if (non_dir || (optind < argc)) {
 		if (args.dirs == NULL) {
 			args.execute_list = false;
+		} else if (nondir_len) {
+			printf("\n");
 		}
 	}
 	llist_free(non_dir);

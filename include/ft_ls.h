@@ -35,6 +35,13 @@
 #define OPT_TIME_ORDERED_IDENT 't'
 #define OPT_DIRECTORIES_ONLY_IDENT 'd'
 
+#define BUILD_RESET(dest, src, dlen, ...) {\
+	strlcat((dest), "/", PATH_MAX);\
+	strlcat((dest), (src), PATH_MAX);\
+	__VA_ARGS__;\
+	memset((dest) + (dlen), 0, PATH_MAX - (dlen));\
+}
+
 typedef uint16_t t_opt;
 
 typedef struct t_arguments {

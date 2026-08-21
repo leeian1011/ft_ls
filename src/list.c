@@ -107,15 +107,48 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 			itr = itr->next;
 			if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
 			if (entry->d_type == DT_DIR) {
-				build_dispatch(&(t_rls_dispatch) {
-					.recurse_list = &recurse_list_temp,
-					.context = *ctx
-				}, entry->d_name, dirp_len);
+				BUILD_RESET(ctx->dirp, entry->d_name, dirp_len, {
+					recurse_list_temp(ctx);
+				});
+				// build_dispatch(&(t_rls_dispatch) {
+				// 	.recurse_list = &recurse_list_temp,
+				// 	.context = *ctx
+				// }, entry->d_name, dirp_len);
 			}
 		}
 	}
 	llist_free_data(dir_list, &free_dirent);
 }
+
+// void temp_list_all(t_arguments args) {
+// 	t_rls_ctx rls_ctx;
+// 	char cwd[PATH_MAX];
+// 	getcwd(cwd, PATH_MAX);
+// 	rls_ctx.dirp = cwd;
+// 	rls_ctx.cwd_len = strlen(cwd);
+// 	rls_ctx.options = args.options;
+// 	t_rls_dispatch rls_dispatch = {
+// 		&recurse_list_temp,
+// 		rls_ctx
+// 	};
+//
+// 	if (!llist_len(args.dirs)) {
+// 		rls_dispatch.recurse_list(&rls_dispatch.context);
+// 		return;
+// 	}
+//
+// 	if (args.options & OPT_REVERSE) {
+// 		args.dirs = llist_rev(args.dirs);
+// 	}
+//
+// 	t_llist *iterator;
+// 	iterator = llist_sort(args.dirs, &compare_dirstr);
+//
+// 	while (iterator) {
+// 		build_dispatch(&rls_dispatch, iterator->data, rls_ctx.cwd_len);
+// 		iterator = iterator->next;
+// 	}
+// }
 
 void temp_list_all(t_arguments args) {
 	t_rls_ctx rls_ctx;
@@ -124,25 +157,23 @@ void temp_list_all(t_arguments args) {
 	rls_ctx.dirp = cwd;
 	rls_ctx.cwd_len = strlen(cwd);
 	rls_ctx.options = args.options;
-	t_rls_dispatch rls_dispatch = {
-		&recurse_list_temp,
-		rls_ctx
-	};
 
 	if (!llist_len(args.dirs)) {
-		rls_dispatch.recurse_list(&rls_dispatch.context);
-		printf("\n");
+		recurse_list_temp(&rls_ctx);
 		return;
+	}
+
+	if (args.options & OPT_REVERSE) {
+		args.dirs = llist_rev(args.dirs);
 	}
 
 	t_llist *iterator;
 	iterator = llist_sort(args.dirs, &compare_dirstr);
-	if (args.options & OPT_REVERSE) {
-		llist_rev(iterator);
-	}
 
 	while (iterator) {
-		build_dispatch(&rls_dispatch, iterator->data, rls_ctx.cwd_len);
+		BUILD_RESET(rls_ctx.dirp, iterator->data, rls_ctx.cwd_len, {
+			recurse_list_temp(&rls_ctx);
+		});
 		iterator = iterator->next;
 	}
 }
