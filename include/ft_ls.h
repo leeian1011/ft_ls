@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "linkedlist.h"
+#include <dirent.h>
+#include <sys/stat.h>
 
 #define OPT_RECURSIVE 1
 #define OPT_REVERSE 2
@@ -41,7 +43,6 @@ typedef struct t_fsinfo {
 } t_fsinfo;
 
 typedef struct t_rls_ctx {
-	t_llist **directories;
 	int options;
 	char *dirp;
 	size_t cwd_len;
@@ -51,6 +52,11 @@ typedef struct t_rls_dispatch {
 	void (*recurse_list)(t_rls_ctx *context);
 	t_rls_ctx context;
 } t_rls_dispatch;
+
+typedef struct t_dirdata {
+	struct dirent *dirent;
+	struct stat *stat;
+} t_dirdata;
 
 t_arguments parse_arguments(int argc, char *const *argv);
 void temp_list_all(t_arguments args);

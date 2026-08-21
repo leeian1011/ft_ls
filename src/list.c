@@ -4,9 +4,24 @@
 #include <stdbool.h>
 
 int compare(t_llist *a, t_llist *b) {
-	struct dirent *a_entry = a->data;
-	struct dirent *b_entry = b->data;
+	struct dirent *a_entry = ((t_dirdata *) a->data)->dirent;
+	struct dirent *b_entry = ((t_dirdata *)b->data)->dirent;
 	return strcmp(a_entry->d_name, b_entry->d_name);
+}
+
+int compare_time(t_llist *a, t_llist *b) {
+	struct timespec a_entry = ((t_dirdata *) a->data)->stat->st_ctimespec;
+	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_ctimespec;
+
+	if (a_entry.tv_sec == b_entry.tv_sec && a_entry.tv_nsec == b_entry.tv_nsec) {
+		return 0;
+	}
+
+	if (a_entry.tv_sec > b_entry.tv_sec) {
+		return -1;
+	} else {
+		return 1;
+	}
 }
 
 void free_dirent_list(void *data) {
@@ -40,7 +55,6 @@ void build_dispatch(t_rls_dispatch *dispatch, void *data, int reset_len) {
 	dispatch->recurse_list(&dispatch->context);
 	memset(dispatch->context.dirp + reset_len, 0, PATH_MAX - reset_len);
 }
-
 
 void recurse_list_temp(t_rls_ctx *ctx) {
 	static bool first_invoc = true;
@@ -99,7 +113,6 @@ void temp_list_all(t_arguments args) {
 	getcwd(cwd, PATH_MAX);
 	rls_ctx.dirp = cwd;
 	rls_ctx.cwd_len = strlen(cwd);
-	rls_ctx.directories = NULL;
 	rls_ctx.options = args.options;
 	t_rls_dispatch rls_dispatch = {
 		&recurse_list_temp,
@@ -108,9 +121,6 @@ void temp_list_all(t_arguments args) {
 
 	if (!llist_len(args.dirs)) {
 		rls_dispatch.recurse_list(&rls_dispatch.context);
-		if (rls_ctx.directories) {
-			llist_free_data(*rls_ctx.directories, &free_dirent_list);
-		}
 		return;
 	}
 
@@ -120,12 +130,15 @@ void temp_list_all(t_arguments args) {
 
 	print_llist(args.dirs);
 
-	t_llist *iterator = llist_sort(args.dirs, &compare);
+	t_llist *iterator;
+	if (args.options & OPT_TIME_ORDERED) {
+		iterator = llist_sort(args.dirs, &compare);
+	} else {
+		iterator = llist_sort(args.dirs, &compare_time);
+	}
+
 	while (iterator) {
 		build_dispatch(&rls_dispatch, iterator->data, rls_ctx.cwd_len);
 		iterator = iterator->next;
-	}
-	if (rls_ctx.directories) {
-		llist_free_data(*rls_ctx.directories, &free_dirent_list);
 	}
 }
