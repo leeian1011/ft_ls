@@ -10,17 +10,21 @@ int compare(t_llist *a, t_llist *b) {
 }
 
 int compare_time(t_llist *a, t_llist *b) {
-	struct timespec a_entry = ((t_dirdata *) a->data)->stat->st_ctimespec;
-	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_ctimespec;
+	struct timespec a_entry = ((t_dirdata *)a->data)->stat->st_mtimespec;
+	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_mtimespec;
+	// char *an = ((t_dirdata *)a->data)->dirent->d_name;
+	// char *bn = ((t_dirdata *)b->data)->dirent->d_name;
 
-	if (a_entry.tv_sec == b_entry.tv_sec && a_entry.tv_nsec == b_entry.tv_nsec) {
-		return 0;
-	}
-
-	if (a_entry.tv_sec > b_entry.tv_sec) {
+	if (a_entry.tv_sec == b_entry.tv_sec) {
+		if (a_entry.tv_nsec > b_entry.tv_nsec) {
+			return -1;
+		} else {
+			return 0;
+		}
+	} else if (a_entry.tv_sec > b_entry.tv_sec) {
 		return -1;
 	} else {
-		return 1;
+		return 0;
 	}
 }
 
@@ -68,19 +72,34 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 	struct dirent *dir_entry;
 	while ((dir_entry = readdir(dir)) != NULL) {
 		struct dirent *dirent_copy = malloc(sizeof(struct dirent));
+		struct stat *stat = malloc(sizeof(struct stat));
+
 		memcpy(dirent_copy, dir_entry, sizeof(struct dirent));
 		if (!strncmp(dir_entry->d_name, ".", 1) && !(ctx->options & OPT_ALL_INFO)) {
 			free(dirent_copy);
+			free(stat);
 			continue;
 		}
-		llist_append(&dir_list, dirent_copy);
+		strlcat(ctx->dirp, "/", PATH_MAX);
+		strlcat(ctx->dirp, dirent_copy->d_name, PATH_MAX);
+		lstat(ctx->dirp, stat);
+		memset(ctx->dirp + dirp_len, 0, PATH_MAX - dirp_len);
+		t_dirdata *dirdata = malloc(sizeof(t_dirdata));
+		dirdata->stat = stat;
+		dirdata->dirent = dirent_copy;
+		llist_append(&dir_list, dirdata);
 	}
 	closedir(dir);
-	dir_list = llist_sort(dir_list, &compare);
+
+	if (ctx->options & OPT_TIME_ORDERED) {
+		dir_list = llist_sort(dir_list, &compare_time);
+	} else {
+		dir_list = llist_sort(dir_list, &compare);
+	}
+
 	if (ctx->options & OPT_REVERSE) {
 		dir_list = llist_rev(dir_list);
 	}
-
 
 	// print the list
 	output_dirlist(ctx, dir_list, first_invoc);
@@ -92,7 +111,7 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 	if (ctx->options & OPT_RECURSIVE) {
 		t_llist *itr = dir_list;
 		while (itr) {
-			struct dirent *entry = itr->data;
+			struct dirent *entry = ((t_dirdata *)itr->data)->dirent;
 			itr = itr->next;
 			if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
 			if (entry->d_type == DT_DIR) {
@@ -105,7 +124,6 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 	}
 	llist_free_data(dir_list, &free_dirent);
 }
-
 
 void temp_list_all(t_arguments args) {
 	t_rls_ctx rls_ctx;
@@ -132,9 +150,9 @@ void temp_list_all(t_arguments args) {
 
 	t_llist *iterator;
 	if (args.options & OPT_TIME_ORDERED) {
-		iterator = llist_sort(args.dirs, &compare);
-	} else {
 		iterator = llist_sort(args.dirs, &compare_time);
+	} else {
+		iterator = llist_sort(args.dirs, &compare);
 	}
 
 	while (iterator) {
