@@ -72,10 +72,13 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 			free(stat);
 			continue;
 		}
-		strlcat(ctx->dirp, "/", PATH_MAX);
-		strlcat(ctx->dirp, dirent_copy->d_name, PATH_MAX);
-		lstat(ctx->dirp, stat);
-		memset(ctx->dirp + dirp_len, 0, PATH_MAX - dirp_len);
+		BUILD_RESET(false, ctx->dirp, dirent_copy->d_name, dirp_len, {
+			lstat(ctx->dirp, stat);
+		});
+		// strlcat(ctx->dirp, "/", PATH_MAX);
+		// strlcat(ctx->dirp, dirent_copy->d_name, PATH_MAX);
+		// lstat(ctx->dirp, stat);
+		// memset(ctx->dirp + dirp_len, 0, PATH_MAX - dirp_len);
 		t_dirdata *dirdata = malloc(sizeof(t_dirdata));
 		dirdata->stat = stat;
 		dirdata->dirent = dirent_copy;
@@ -107,7 +110,7 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 			itr = itr->next;
 			if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
 			if (entry->d_type == DT_DIR) {
-				BUILD_RESET(ctx->dirp, entry->d_name, dirp_len, {
+				BUILD_RESET(false, ctx->dirp, entry->d_name, dirp_len, {
 					recurse_list_temp(ctx);
 				});
 				// build_dispatch(&(t_rls_dispatch) {
@@ -171,9 +174,13 @@ void temp_list_all(t_arguments args) {
 	iterator = llist_sort(args.dirs, &compare_dirstr);
 
 	while (iterator) {
-		BUILD_RESET(rls_ctx.dirp, iterator->data, rls_ctx.cwd_len, {
+		if (!strncmp(iterator->data, "/", 1)) {
 			recurse_list_temp(&rls_ctx);
-		});
+		} else {
+			BUILD_RESET(false, rls_ctx.dirp, iterator->data, rls_ctx.cwd_len, {
+				recurse_list_temp(&rls_ctx);
+			});
+		}
 		iterator = iterator->next;
 	}
 }

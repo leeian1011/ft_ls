@@ -63,8 +63,8 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		if (args.options & OPT_PASSED_PATH) {
 			args.options |= OPT_MULTI_PP;
 		}
-
-		BUILD_RESET(cwd, argv[i], cwd_len, {
+		
+		BUILD_RESET(!strncmp(argv[i], "/", 1), cwd, argv[i], cwd_len, {
 			DIR* dir = opendir(cwd);
 			if (!dir) {
 				handle_errno_parsing(argv[i], &non_dir);
@@ -74,6 +74,7 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 				closedir(dir);
 			}
 		});
+
 		// strlcat(cwd, "/", PATH_MAX);
 		// strlcat(cwd, argv[i], PATH_MAX);
 		// DIR* dir = opendir(cwd);
@@ -104,6 +105,12 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		}
 	}
 	llist_free(non_dir);
+
+	t_llist *itrr = args.dirs;
+	while (itrr) {
+		printf("look here: %s\n", (char *)itrr->data);
+		itrr = itrr->next;
+	}
 
 	return args;
 }
