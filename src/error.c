@@ -1,6 +1,3 @@
-#include <asm-generic/errno-base.h>
-#include <errno.h>
-#include <stdio.h>
 #include "../include/linkedlist.h"
 #include "../include/ft_ls.h"
 

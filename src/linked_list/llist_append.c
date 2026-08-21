@@ -1,5 +1,4 @@
 #include "../../include/linkedlist.h"
-#include <stdlib.h>
 
 t_llist *llist_new_node(void *data) {
 	t_llist *node = malloc(sizeof(t_llist));

@@ -1,6 +1,7 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 #include <stddef.h>
+#include <stdlib.h>
 
 typedef struct t_llist {
 	struct t_llist *next;

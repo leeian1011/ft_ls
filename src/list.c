@@ -1,9 +1,10 @@
 #include "../include/ft_ls.h"
-#include <dirent.h>
-#include <limits.h>
-#include <stdbool.h>
 
-int compare(t_llist *a, t_llist *b) {
+int compare_dirstr(t_llist *a, t_llist *b) {
+	return strcmp(a->data, b->data);
+}
+
+int compare_dirent(t_llist *a, t_llist *b) {
 	struct dirent *a_entry = ((t_dirdata *) a->data)->dirent;
 	struct dirent *b_entry = ((t_dirdata *)b->data)->dirent;
 	return strcmp(a_entry->d_name, b_entry->d_name);
@@ -12,8 +13,6 @@ int compare(t_llist *a, t_llist *b) {
 int compare_time(t_llist *a, t_llist *b) {
 	struct timespec a_entry = ((t_dirdata *)a->data)->stat->st_mtimespec;
 	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_mtimespec;
-	// char *an = ((t_dirdata *)a->data)->dirent->d_name;
-	// char *bn = ((t_dirdata *)b->data)->dirent->d_name;
 
 	if (a_entry.tv_sec == b_entry.tv_sec) {
 		if (a_entry.tv_nsec > b_entry.tv_nsec) {
@@ -44,13 +43,6 @@ void free_dirent(void *data) {
 	struct dirent *tdata = data;
 	if (!tdata) return;
 	free(tdata);
-}
-
-void print_llist(void *list) {
-	t_llist *data = list;
-	while (data) {
-		data = data->next;
-	}
 }
 
 void build_dispatch(t_rls_dispatch *dispatch, void *data, int reset_len) {
@@ -94,7 +86,7 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 	if (ctx->options & OPT_TIME_ORDERED) {
 		dir_list = llist_sort(dir_list, &compare_time);
 	} else {
-		dir_list = llist_sort(dir_list, &compare);
+		dir_list = llist_sort(dir_list, &compare_dirent);
 	}
 
 	if (ctx->options & OPT_REVERSE) {
@@ -139,20 +131,14 @@ void temp_list_all(t_arguments args) {
 
 	if (!llist_len(args.dirs)) {
 		rls_dispatch.recurse_list(&rls_dispatch.context);
+		printf("\n");
 		return;
 	}
 
-	if (args.options & OPT_REVERSE) {
-		llist_rev(args.dirs);
-	}
-
-	print_llist(args.dirs);
-
 	t_llist *iterator;
-	if (args.options & OPT_TIME_ORDERED) {
-		iterator = llist_sort(args.dirs, &compare_time);
-	} else {
-		iterator = llist_sort(args.dirs, &compare);
+	iterator = llist_sort(args.dirs, &compare_dirstr);
+	if (args.options & OPT_REVERSE) {
+		llist_rev(iterator);
 	}
 
 	while (iterator) {

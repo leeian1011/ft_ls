@@ -7,9 +7,13 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-#include "linkedlist.h"
 #include <dirent.h>
 #include <sys/stat.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <errno.h>
+#include <getopt.h>
+#include "linkedlist.h"
 
 #define OPT_RECURSIVE 1
 #define OPT_REVERSE 2
