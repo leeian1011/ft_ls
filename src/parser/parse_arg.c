@@ -74,20 +74,12 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 				closedir(dir);
 			}
 		});
-
-		// strlcat(cwd, "/", PATH_MAX);
-		// strlcat(cwd, argv[i], PATH_MAX);
-		// DIR* dir = opendir(cwd);
-		// if (!dir) {
-		// 	handle_errno_parsing(argv[i], &non_dir);
-		// } else {
-		// 	llist_append(&args.dirs, argv[i]);
-		// 	args.options |= OPT_PASSED_PATH;
-		// 	closedir(dir);
-		// }
-		// memset(cwd + cwd_len, 0, PATH_MAX - cwd_len);
 	}
 	size_t nondir_len = llist_len(non_dir);
+	non_dir = llist_sort(non_dir, &compare_dirstr);
+	if (args.options & OPT_REVERSE) {
+		non_dir = llist_rev(non_dir);
+	}
 	t_llist *itr = non_dir;
 	while (itr) {
 		printf("%s ", (char *)itr->data);
