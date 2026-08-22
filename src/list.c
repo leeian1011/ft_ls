@@ -1,31 +1,5 @@
 #include "../include/ft_ls.h"
 
-int compare_dirstr(t_llist *a, t_llist *b) {
-	return strcmp(a->data, b->data);
-}
-
-int compare_dirent(t_llist *a, t_llist *b) {
-	struct dirent *a_entry = ((t_dirdata *) a->data)->dirent;
-	struct dirent *b_entry = ((t_dirdata *)b->data)->dirent;
-	return strcmp(a_entry->d_name, b_entry->d_name);
-}
-
-int compare_time(t_llist *a, t_llist *b) {
-	struct timespec a_entry = ((t_dirdata *)a->data)->stat->st_mtim;
-	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_mtim;
-
-	if (a_entry.tv_sec == b_entry.tv_sec) {
-		if (a_entry.tv_nsec > b_entry.tv_nsec) {
-			return -1;
-		} else {
-			return 0;
-		}
-	} else if (a_entry.tv_sec > b_entry.tv_sec) {
-		return -1;
-	} else {
-		return 0;
-	}
-}
 
 void free_dirent_list(void *data) {
 	t_llist *list = data;
@@ -174,13 +148,9 @@ void temp_list_all(t_arguments args) {
 	iterator = llist_sort(args.dirs, &compare_dirstr);
 
 	while (iterator) {
-		if (!strncmp(iterator->data, "/", 1)) {
+		BUILD_RESET(!strncmp(iterator->data, "/", 1), rls_ctx.dirp, iterator->data, rls_ctx.cwd_len, {
 			recurse_list_temp(&rls_ctx);
-		} else {
-			BUILD_RESET(false, rls_ctx.dirp, iterator->data, rls_ctx.cwd_len, {
-				recurse_list_temp(&rls_ctx);
-			});
-		}
+		});
 		iterator = iterator->next;
 	}
 }
