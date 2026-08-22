@@ -67,7 +67,9 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 		BUILD_RESET(!strncmp(argv[i], "/", 1), cwd, argv[i], cwd_len, {
 			DIR* dir = opendir(cwd);
 			if (!dir) {
-				handle_errno_parsing(argv[i], &non_dir);
+				if (handle_errno_parsing(argv[i], &non_dir)) {
+					llist_append(&args.dirs, argv[i]);
+				}
 			} else {
 				llist_append(&args.dirs, argv[i]);
 				args.options |= OPT_PASSED_PATH;
@@ -100,7 +102,7 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 
 	t_llist *itrr = args.dirs;
 	while (itrr) {
-		printf("look here: %s\n", (char *)itrr->data);
+		// printf("look here: %s\n", (char *)itrr->data);
 		itrr = itrr->next;
 	}
 
