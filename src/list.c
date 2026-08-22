@@ -8,15 +8,20 @@ void free_dirent_list(void *data) {
 	while (list) {
 		temp = list;
 		list = list->next;
-		free(temp->data);
+		t_dirdata *tf = temp->data;
+		free(tf->dirent);
+		free(tf->stat);
+		free(tf);
 		free(temp);
 	}
 }
 
 void free_dirent(void *data) {
-	struct dirent *tdata = data;
-	if (!tdata) return;
-	free(tdata);
+	t_dirdata *tf = data;
+	if (!tf) return;
+	free(tf->dirent);
+	free(tf->stat);
+	free(tf);
 }
 
 void build_dispatch(t_rls_dispatch *dispatch, void *data, int reset_len) {
