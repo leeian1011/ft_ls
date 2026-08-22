@@ -37,12 +37,16 @@
 
 #define BUILD_RESET(replace, dest, src, dlen, ...) {\
 	if ((replace)) {\
-		printf("hello inside\n");\
 		strlcpy((dest), (src), PATH_MAX);\
-		__VA_ARGS__\
-		getcwd((dest), PATH_MAX);\
+		dlen = 0;\
+		__VA_ARGS__;\
+		void *_ = getcwd((dest), PATH_MAX);\
+		dlen = strlen((dest));\
+		(void)_;\
 	} else {\
-		strlcat((dest), "/", PATH_MAX);\
+		if (*(dest + dlen - 1) != '/') {\
+			strlcat((dest), "/", PATH_MAX);\
+		}\
 		strlcat((dest), (src), PATH_MAX);\
 		__VA_ARGS__;\
 		memset((dest) + (dlen), 0, PATH_MAX - (dlen));\
