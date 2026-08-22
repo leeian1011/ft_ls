@@ -81,7 +81,7 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 void temp_list_all(t_arguments args) {
 	t_rls_ctx rls_ctx;
 	char cwd[PATH_MAX];
-	getcwd(cwd, PATH_MAX);
+	void *_ = getcwd(cwd, PATH_MAX); (void)_;
 	rls_ctx.dirp = cwd;
 	rls_ctx.cwd_len = strlen(cwd);
 	rls_ctx.options = args.options;

@@ -79,3 +79,8 @@ mentioned in the description, the pointers may be invalidated by calls to `readd
 - GNU `ls` was developed based on the POSIX description of `ls`, whilst, OpenBSD `ls` was a direct continuation of development from the unix OS.
 - Leveraged macros to reduce redundant ugly code.
 - TODO: handle directories which start with '/'.
+
+[22/8/2026]
+TODO: fix bug when outputting multiple directories in -R, if one directory fails, no new line present
+TODO: fix bug when printing -R with /*/ or any directory with '/' will lead to double print of // in directory name.
+

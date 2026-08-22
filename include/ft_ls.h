@@ -41,8 +41,7 @@
 		dlen = 0;\
 		__VA_ARGS__;\
 		void *_ = getcwd((dest), PATH_MAX);\
-		dlen = strlen((dest));\
-		(void)_;\
+		dlen = strlen((dest)); (void)_;\
 	} else {\
 		if (*(dest + dlen - 1) != '/') {\
 			strlcat((dest), "/", PATH_MAX);\
