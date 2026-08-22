@@ -1,16 +1,16 @@
 #include "../include/ft_ls.h"
 
-int compare_dirstr(t_llist *a, t_llist *b) {
+int8_t compare_dirstr(t_llist *a, t_llist *b) {
 	return strcmp(a->data, b->data);
 }
 
-int compare_dirent(t_llist *a, t_llist *b) {
+int8_t compare_dirent(t_llist *a, t_llist *b) {
 	struct dirent *a_entry = ((t_dirdata *) a->data)->dirent;
 	struct dirent *b_entry = ((t_dirdata *)b->data)->dirent;
 	return strcmp(a_entry->d_name, b_entry->d_name);
 }
 
-int compare_time(t_llist *a, t_llist *b) {
+int8_t compare_time(t_llist *a, t_llist *b) {
 	struct timespec a_entry = ((t_dirdata *)a->data)->stat->st_mtim;
 	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_mtim;
 

@@ -53,7 +53,7 @@
 	}\
 }
 
-typedef uint16_t t_opt;
+typedef int16_t t_opt;
 
 typedef struct t_arguments {
 	t_opt options;
@@ -85,10 +85,12 @@ void temp_list_all(t_arguments args);
 int handle_errno_parsing(char *dir, t_llist **non_dir);
 void handle_errno_listing(t_rls_ctx *ctx);
 void output_dirlist(t_rls_ctx *ctx, t_llist *dir_list, bool first_invoc);
+void output_opterr(t_opt opt);
+void output_nondir(t_llist *non_dir, t_arguments *args, int argc);
 
-int compare_dirstr(t_llist *a, t_llist *b);
-int compare_dirent(t_llist *a, t_llist *b);
-int compare_time(t_llist *a, t_llist *b);
+int8_t compare_dirstr(t_llist *a, t_llist *b);
+int8_t compare_dirent(t_llist *a, t_llist *b);
+int8_t compare_time(t_llist *a, t_llist *b);
 
 
 #endif

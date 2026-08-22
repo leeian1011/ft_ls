@@ -37,26 +37,15 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 	};
 	
 	if (argc == 1) return args;
-	int opts = 0;
+
+	t_opt opts = 0;
 	while ((opts = getopt_long(argc, argv, OPT_IDENTS, long_opts, NULL)) != -1) {
-		if (opts == '?') {
-			fprintf(stderr, "Try ft_ls --help for more information.\n");
-			exit(2);
-		} else if (opts == 255) {
-			//print help
-			printf("Usage: ft_ls [OPTION]... [FILE]...\n"
-					"List information about the FILEs (the current directory by default).\n"
-					"Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n"
-					"\nMandatory arguments to long options are mandatory for short options too.\n"
-				  );
-			exit(0);
-		}
+		output_opterr(opts);
 		args.options |= ident_to_optbit(opts);
 	}
 
 	char cwd[PATH_MAX];
-	void *_ = getcwd(cwd, PATH_MAX);
-	(void)_;
+	void *_ = getcwd(cwd, PATH_MAX); (void)_;
 	size_t cwd_len = strlen(cwd);
 	t_llist *non_dir = NULL;
 
@@ -78,28 +67,8 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 			}
 		});
 	}
-	size_t nondir_len = llist_len(non_dir);
-	non_dir = llist_sort(non_dir, &compare_dirstr);
-	if (args.options & OPT_REVERSE) {
-		non_dir = llist_rev(non_dir);
-	}
-	t_llist *itr = non_dir;
-	while (itr) {
-		printf("%s ", (char *)itr->data);
-		itr = itr->next;
-	}
-	if (nondir_len) {
-		printf("\n");
-	}
 
-	if (non_dir || (optind < argc)) {
-		if (args.dirs == NULL) {
-			args.execute_list = false;
-		} else if (nondir_len) {
-			printf("\n");
-		}
-	}
-	llist_free(non_dir);
+	output_nondir(non_dir, &args, argc);
 
 	return args;
 }
