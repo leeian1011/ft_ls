@@ -55,7 +55,8 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 	}
 
 	char cwd[PATH_MAX];
-	getcwd(cwd, PATH_MAX);
+	void *_ = getcwd(cwd, PATH_MAX);
+	(void)_;
 	size_t cwd_len = strlen(cwd);
 	t_llist *non_dir = NULL;
 

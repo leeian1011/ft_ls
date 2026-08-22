@@ -1,5 +1,5 @@
 TARGET = ft_ls
-CFLAGS = -Wall -Werror -Wextra 
+CFLAGS = -Wall -Werror -Wextra -O3
 DEBUGFLAGS = -g 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -39,8 +39,8 @@ $(DEBUG_OBJ_DIR):
 	mkdir -p $@
 
 fclean: clean
-	rm $(TARGET)
-	rm $(TARGET)_debug
+	rm -f $(TARGET)
+	rm -f $(TARGET)_debug
 
 clean:
 	rm -rf $(OBJ_DIR)
