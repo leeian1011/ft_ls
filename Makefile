@@ -38,9 +38,9 @@ $(DEBUG_OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(DEBUG_OBJ_DIR)
 $(DEBUG_OBJ_DIR):
 	mkdir -p $@
 
-
 fclean: clean
 	rm $(TARGET)
+	rm $(TARGET)_debug
 
 clean:
 	rm -rf $(OBJ_DIR)
