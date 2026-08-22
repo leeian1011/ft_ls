@@ -11,8 +11,8 @@ int compare_dirent(t_llist *a, t_llist *b) {
 }
 
 int compare_time(t_llist *a, t_llist *b) {
-	struct timespec a_entry = ((t_dirdata *)a->data)->stat->st_mtimespec;
-	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_mtimespec;
+	struct timespec a_entry = ((t_dirdata *)a->data)->stat->st_mtim;
+	struct timespec b_entry = ((t_dirdata *)b->data)->stat->st_mtim;
 
 	if (a_entry.tv_sec == b_entry.tv_sec) {
 		if (a_entry.tv_nsec > b_entry.tv_nsec) {
