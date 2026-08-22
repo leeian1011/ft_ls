@@ -15,13 +15,13 @@ int handle_errno_parsing(char *dir, t_llist **non_dir) {
 	}
 }
 
-void handle_errno_listing(t_rls_ctx *context) {
+void handle_errno_listing(t_rls_ctx *ctx) {
 	switch (errno) {
 		case ENOENT:
-			fprintf(stderr, "ls: cannot access \"%s\": No such file or directory\n", context->dirp);
+			fprintf(stderr, "ls: cannot access \"%s\": No such file or directory\n", &ctx->dirp[ctx->cwd_len + 1]);
 			break;
 		case EACCES:
-			fprintf(stderr, "ls: cannot access \"%s\": Permission denied", context->dirp);
+			fprintf(stderr, "ls: cannot access \"%s\": Permission denied\n", &ctx->dirp[ctx->cwd_len + 1]);
 			break;
 	}
 }
