@@ -28,11 +28,13 @@ void output_dirlist(t_rls_ctx *ctx, t_llist *dir_list, bool first_invoc) {
 		printf("\n");
 	}
 
-	if (ctx->options & OPT_RECURSIVE && !(ctx->options & OPT_PASSED_PATH)) {
-		printf(".%s:\n", &ctx->dirp[ctx->cwd_len]);
-	}
-
-	if (ctx->options & OPT_PASSED_PATH || ctx->options & OPT_MULTI_PP) {
+	if (ctx->options & OPT_RECURSIVE) {
+		if (!(ctx->options & OPT_PASSED_PATH) && !(ctx->options & OPT_MULTI_PP)) {
+			printf(".%s:\n", &ctx->dirp[ctx->cwd_len]);
+		} else {
+			printf("%s:\n", &ctx->dirp[ctx->cwd_len + 1]);
+		}
+	} else if (ctx->options & OPT_MULTI_PP) {
 		printf("%s:\n", &ctx->dirp[ctx->cwd_len + 1]);
 	}
 

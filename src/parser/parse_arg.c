@@ -100,11 +100,5 @@ t_arguments parse_arguments(int argc, char *const *argv) {
 	}
 	llist_free(non_dir);
 
-	t_llist *itrr = args.dirs;
-	while (itrr) {
-		// printf("look here: %s\n", (char *)itrr->data);
-		itrr = itrr->next;
-	}
-
 	return args;
 }

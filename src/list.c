@@ -140,13 +140,13 @@ void temp_list_all(t_arguments args) {
 		return;
 	}
 
+	args.dirs = llist_sort(args.dirs, &compare_dirstr);
+
 	if (args.options & OPT_REVERSE) {
 		args.dirs = llist_rev(args.dirs);
 	}
 
-	t_llist *iterator;
-	iterator = llist_sort(args.dirs, &compare_dirstr);
-
+	t_llist *iterator = args.dirs;
 	while (iterator) {
 		BUILD_RESET(!strncmp(iterator->data, "/", 1), rls_ctx.dirp, iterator->data, rls_ctx.cwd_len, {
 			recurse_list_temp(&rls_ctx);
