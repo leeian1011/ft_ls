@@ -1,21 +1,5 @@
 #include "../include/ft_ls.h"
 
-
-void free_dirent_list(void *data) {
-	t_llist *list = data;
-	t_llist *temp = NULL;
-	
-	while (list) {
-		temp = list;
-		list = list->next;
-		t_dirdata *tf = temp->data;
-		free(tf->dirent);
-		free(tf->stat);
-		free(tf);
-		free(temp);
-	}
-}
-
 void free_dirent(void *data) {
 	t_dirdata *tf = data;
 	if (!tf) return;
@@ -54,10 +38,6 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 		BUILD_RESET(false, ctx->dirp, dirent_copy->d_name, dirp_len, {
 			lstat(ctx->dirp, stat);
 		});
-		// strlcat(ctx->dirp, "/", PATH_MAX);
-		// strlcat(ctx->dirp, dirent_copy->d_name, PATH_MAX);
-		// lstat(ctx->dirp, stat);
-		// memset(ctx->dirp + dirp_len, 0, PATH_MAX - dirp_len);
 		t_dirdata *dirdata = malloc(sizeof(t_dirdata));
 		dirdata->stat = stat;
 		dirdata->dirent = dirent_copy;
@@ -92,45 +72,11 @@ void recurse_list_temp(t_rls_ctx *ctx) {
 				BUILD_RESET(false, ctx->dirp, entry->d_name, dirp_len, {
 					recurse_list_temp(ctx);
 				});
-				// build_dispatch(&(t_rls_dispatch) {
-				// 	.recurse_list = &recurse_list_temp,
-				// 	.context = *ctx
-				// }, entry->d_name, dirp_len);
 			}
 		}
 	}
 	llist_free_data(dir_list, &free_dirent);
 }
-
-// void temp_list_all(t_arguments args) {
-// 	t_rls_ctx rls_ctx;
-// 	char cwd[PATH_MAX];
-// 	getcwd(cwd, PATH_MAX);
-// 	rls_ctx.dirp = cwd;
-// 	rls_ctx.cwd_len = strlen(cwd);
-// 	rls_ctx.options = args.options;
-// 	t_rls_dispatch rls_dispatch = {
-// 		&recurse_list_temp,
-// 		rls_ctx
-// 	};
-//
-// 	if (!llist_len(args.dirs)) {
-// 		rls_dispatch.recurse_list(&rls_dispatch.context);
-// 		return;
-// 	}
-//
-// 	if (args.options & OPT_REVERSE) {
-// 		args.dirs = llist_rev(args.dirs);
-// 	}
-//
-// 	t_llist *iterator;
-// 	iterator = llist_sort(args.dirs, &compare_dirstr);
-//
-// 	while (iterator) {
-// 		build_dispatch(&rls_dispatch, iterator->data, rls_ctx.cwd_len);
-// 		iterator = iterator->next;
-// 	}
-// }
 
 void temp_list_all(t_arguments args) {
 	t_rls_ctx rls_ctx;
