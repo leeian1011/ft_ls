@@ -82,5 +82,9 @@ void handle_errno_parsing(char *dir, t_llist **non_dir);
 void handle_errno_listing(t_rls_ctx *ctx);
 void output_dirlist(t_rls_ctx *ctx, t_llist *dir_list, bool first_invoc);
 
+int compare_dirstr(t_llist *a, t_llist *b);
+int compare_dirent(t_llist *a, t_llist *b);
+int compare_time(t_llist *a, t_llist *b);
+
 
 #endif
